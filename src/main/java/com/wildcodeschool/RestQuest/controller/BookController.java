@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,11 +47,16 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}")
-    public Book update(@PathVariable Long id, @RequestBody Book book) {
-        Book bookToUpdate = bookRepository.findById(id).get();
-        bookToUpdate.setTitle(book.getTitle());
-        bookToUpdate.setDescription(book.getDescription());
-        return bookRepository.save(bookToUpdate);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Book book) {
+        Optional<Book> optionalBookToUpdate = bookRepository.findById(id);
+        if (optionalBookToUpdate.isPresent()) {
+            Book bookToUpdate = optionalBookToUpdate.get();
+            bookToUpdate.setTitle(book.getTitle());
+            bookToUpdate.setDescription(book.getDescription());
+            return ResponseEntity.ok(bookRepository.save(bookToUpdate));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/book/{id}")
