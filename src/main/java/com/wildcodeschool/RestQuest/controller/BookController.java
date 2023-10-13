@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/books")
+
 public class BookController {
 
     private final BookRepository bookRepository;
@@ -20,12 +20,12 @@ public class BookController {
         this.bookRepository = bookRepositoryInjected;
     }
 
-    @GetMapping()
+    @GetMapping("/books")
     public List<Book> index(){
         return bookRepository.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/books/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         // les méthodes du repo (pas ttes) renvoient des optionals = wrapper ajouter une vérif supplémentaire sur l'existence de la valeur d'1 variable
         Optional<Book> optionalBook = bookRepository.findById(id);
@@ -39,18 +39,18 @@ public class BookController {
         }
     }
 
-    @PostMapping("/search")
+    @PostMapping("/books/search")
     public List<Book> search(@RequestBody Map<String, String> body) {
         String searchTerm = body.get("text");
         return bookRepository.findByTitleContainingOrDescriptionContaining(searchTerm, searchTerm);
     }
 
-    @PostMapping()
+    @PostMapping("/books")
     public Book create(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/books/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Book book) {
         Optional<Book> optionalBookToUpdate = bookRepository.findById(id);
         if (optionalBookToUpdate.isPresent()) {
@@ -63,7 +63,7 @@ public class BookController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/books/{id}")
     public boolean delete(@PathVariable Long id) {
         bookRepository.deleteById(id);
         return true;
